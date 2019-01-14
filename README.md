@@ -1,4 +1,4 @@
-FCC Test Challengs Prototype 
+Chai Challenges 
 ============================
 
-QA with mocha & chai
+By freeCodeCamp
