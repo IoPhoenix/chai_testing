@@ -55,8 +55,8 @@ suite('Functional Tests', function() {
             // Test the status and the text response (see the example above). 
             // Please follow the order -status, -text. We rely on that in our tests.
             // It should respond 'Hello Guest'
-            assert.fail(res.status, 200);
-            assert.fail(res.text, 'hello Guest');
+            assert.equal(res.status, 200);
+            assert.equal(res.text, 'hello Guest');
             done();   // Always call the 'done()' callback when finished.
           });
       });
@@ -64,18 +64,17 @@ suite('Functional Tests', function() {
       /**  Another one... **/
       test('Test GET /hello with your name',  function(done){ // Don't forget the callback...
          chai.request(server)             // 'server' is the Express App
-          .get('/hello?name=xy_z') /** <=== Put your name in the query **/ 
-          .end(function(err, res){        // res is the response object
+          .get('/hello?name=Olga') /** <=== Put your name in the query **/ 
+          .end(function(err, res) {        // res is the response object
           
             // Your tests here.
             // Replace assert.fail(). Make the test pass.
             // Test the status and the text response. Follow the test order like above.
-            assert.fail(res.status, 200);
-             assert.fail(res.text, 'hello xy_z'/** <==  Put your name here **/);
+            assert.equal(res.status, 200);
+             assert.equal(res.text, 'hello Olga'/** <==  Put your name here **/);
             done();   // Always call the 'done()' callback when finished.
           });
       });
-
     });
 
     // In the next example we'll see how to send data in a request payload (body).
@@ -120,14 +119,15 @@ suite('Functional Tests', function() {
        // we setup the request for you...
        chai.request(server)
         .put('/travellers')
-        /** send {surname: 'Colombo'} here **/
-        // .send({...})
+        .send({surname: 'Colombo'})
         .end(function(err, res){
           
           /** your tests here **/
-          assert.fail(); // remove this after adding tests
-          
-          done(); // Never forget the 'done()' callback...
+          assert.equal(res.status, 200, 'response status should be 200');
+          assert.equal(res.type, 'application/json', "Response should be json");
+          assert.equal(res.body.name, 'Cristoforo',  'res.body.name should be "Cristoforo"');
+          assert.equal(res.body.surname, 'Colombo', 'res.body.surname should be "Colombo"');
+          done(); 
         });
       });
 
@@ -135,15 +135,19 @@ suite('Functional Tests', function() {
       // Try it again. This time without help !!
       test('send {surname: "da Verrazzano"}', function(done) {
         /** place the chai-http request code here... **/
-        
-        /** place your tests inside the callback **/
-        
-        assert.fail(); // remove this after adding tests
-        done();
+        chai.request(server)
+          .put('/travellers')
+          .send({surname: "da Verrazzano"})        
+          .end(function(error, response) {
+            assert.equal(response.status, 200, 'response status should be 200');
+            assert.equal(response.type, 'application/json', "Response should be json");
+            assert.equal(response.body.name, 'Giovanni', 'res.body.surname should be "Giovanni"');
+            assert.equal(response.body.surname, 'da Verrazzano', 'res.body.surname should be "da Verrazzano"');
+            done();
+          });
       });
-    });
-
   });
+
 
   // In the next challenges we are going to simulate the human interaction with
   // a page using a device called 'Headless Browser'. A headless browser is a web
@@ -160,10 +164,10 @@ suite('Functional Tests', function() {
 
   // On Gomix we'll use this setting
   /** ### Copy your project's url here  ### **/
-  Browser.site = 'https://sincere-cone.gomix.me'; 
+  // Browser.site = 'https://sincere-cone.gomix.me'; 
   
   // If you are testing on a local environment replace the line above  with 
-  // Browser.localhost('example.com', (process.env.PORT || 3000));
+  Browser.localhost('http://localhost:3000/', (process.env.PORT || 3000));
 
   suite('e2e Testing with Zombie.js', function() {
     const browser = new Browser();
@@ -234,20 +238,14 @@ suite('Functional Tests', function() {
         browser
           .fill('surname', 'Colombo')
           .pressButton('submit', function(){
-            
-            /** YOUR TESTS HERE, Don't forget to remove assert.fail() **/
-            
-            // pressButton is Async.  Waits for the ajax call to complete...
-
             // assert that status is OK 200
-
+            browser.assert.success();
             // assert that the text inside the element 'span#name' is 'Marco'
-
+            browser.assert.text('span#name', 'Cristoforo');
             // assert that the text inside the element 'span#surname' is 'Polo'
-
+            browser.assert.text('span#surname', 'Colombo');
             // assert that the element(s) 'span#dates' exist and their count is 1
-            
-            assert.fail();
+            browser.assert.element('span#dates', 1);
             
             done();   // It's an async test, so we have to call 'done()''
           });
@@ -262,10 +260,22 @@ suite('Functional Tests', function() {
         // assert that the text inside the element 'span#name' is 'Amerigo'
         // assert that the text inside the element 'span#surname' is 'Vespucci'
         // assert that the element(s) 'span#dates' exist and their count is 1
-        assert.fail();
+        browser
+        .fill('surname', 'Vespucci')
+        .pressButton('submit', function(){
+          // assert that status is OK 200
+          browser.assert.success();
+          // assert that the text inside the element 'span#name' is 'Marco'
+          browser.assert.text('span#name', 'Amerigo');
+          // assert that the text inside the element 'span#surname' is 'Polo'
+          browser.assert.text('span#surname', 'Vespucci');
+          // assert that the element(s) 'span#dates' exist and their count is 1
+          browser.assert.element('span#dates', 1);
         done();
       
       });
     });
   });
+});
+});
 });
