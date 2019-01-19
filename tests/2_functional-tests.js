@@ -183,7 +183,7 @@ suite('Functional Tests', function() {
     // each test, or at the end of a suite. See the Mocha docs for more infos.
 
     suiteSetup(function(done) { // Remember, web interactions are asynchronous !!
-      return browser.visit('/', done);  // Browser asynchronous operations take a callback
+      return browser.visit('http://localhost:3000/', done);  // Browser asynchronous operations take a callback
     });
 
     suite('"Famous Italian Explorers" form', function() {
@@ -205,8 +205,8 @@ suite('Functional Tests', function() {
       // ### EXAMPLE ###
       test('#example - submit the input "surname" : "Polo"', function(done) {
         browser
-          .fill('surname', 'Polo')
-          .pressButton('submit', function(){
+          .fill('surname', 'Polo');
+          return browser.pressButton('submit', function(){
             // pressButton is ## Async ##.  
             // It waits for the ajax call to complete...
 
@@ -237,7 +237,7 @@ suite('Functional Tests', function() {
         // assert that the element(s) 'span#dates' exist and their count is 1
         browser
           .fill('surname', 'Colombo')
-          .pressButton('submit', function(){
+          return browser.pressButton('submit', function(){
             // assert that status is OK 200
             browser.assert.success();
             // assert that the text inside the element 'span#name' is 'Marco'
@@ -262,7 +262,7 @@ suite('Functional Tests', function() {
         // assert that the element(s) 'span#dates' exist and their count is 1
         browser
         .fill('surname', 'Vespucci')
-        .pressButton('submit', function(){
+        return browser.pressButton('submit', function(){
           // assert that status is OK 200
           browser.assert.success();
           // assert that the text inside the element 'span#name' is 'Marco'
